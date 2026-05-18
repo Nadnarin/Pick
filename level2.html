@@ -1,27 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>SDGs Gender Equality – Scenario Questions</title>
 
 <style>
-
 body{
 margin:0;
-overflow:hidden;
-font-family:Arial,sans-serif;
+font-family:Arial;
 height:100vh;
-background:linear-gradient(
-to bottom,
-#87CEEB 0%,
-#87CEEB 60%,
-#7ed957 60%
-);
+overflow:hidden;
+background:
+linear-gradient(#87CEEB,#b6f2ff,#7ee77e);
 }
-
-/* Header */
 
 .header{
 position:absolute;
@@ -29,7 +19,6 @@ top:20px;
 left:20px;
 font-size:28px;
 font-weight:bold;
-z-index:100;
 }
 
 .score{
@@ -37,130 +26,60 @@ position:absolute;
 top:20px;
 right:20px;
 font-size:24px;
-font-weight:bold;
-z-index:100;
 }
-
-/* amusement park */
-
-.roller{
-position:absolute;
-bottom:180px;
-left:50px;
-font-size:100px;
-}
-
-.wheel{
-position:absolute;
-bottom:140px;
-right:120px;
-font-size:120px;
-}
-
-.tent{
-position:absolute;
-bottom:120px;
-left:40%;
-font-size:100px;
-}
-
-/* flowers */
 
 .flower{
 position:absolute;
 font-size:50px;
 cursor:pointer;
-transition:.3s;
-}
-
-.flower:hover{
-transform:scale(1.2);
-}
-
-/* question modal */
-
-.modal{
-display:none;
-position:fixed;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-background:white;
-padding:25px;
-width:80%;
-max-width:700px;
-border-radius:20px;
-z-index:500;
-box-shadow:0 0 20px rgba(0,0,0,.3);
-}
-
-.dropAreaContainer{
-display:flex;
-justify-content:space-between;
-margin-top:20px;
-gap:20px;
 }
 
 .box{
-flex:1;
-min-height:150px;
+position:absolute;
+bottom:30px;
+width:35%;
+height:150px;
+border:3px dashed;
 padding:10px;
-border:3px dashed gray;
-border-radius:15px;
 }
 
-.equality{
-background:#d4ffd4;
+.eq{
+left:5%;
+background:#d9ffd9;
 }
 
-.inequality{
-background:#ffd4d4;
+.ineq{
+right:5%;
+background:#ffd6d6;
 }
 
-.draggable{
+.card{
 padding:10px;
-background:#ffd966;
 margin:10px;
-border-radius:10px;
+background:white;
 cursor:grab;
 }
 
-.submitBtn{
-margin-top:20px;
-padding:10px 20px;
-font-size:18px;
-cursor:pointer;
+#cards{
+position:absolute;
+top:120px;
+left:50%;
+transform:translateX(-50%);
+width:60%;
 }
 
-/* Result */
-
-.resultScreen{
+.result{
 display:none;
-position:fixed;
+position:absolute;
 top:50%;
 left:50%;
 transform:translate(-50%,-50%);
 background:white;
-padding:40px;
-border-radius:20px;
-text-align:center;
-box-shadow:0 0 30px rgba(0,0,0,.4);
-z-index:1000;
+padding:30px;
 }
-
-.resultScreen h1{
-font-size:40px;
-}
-
-button{
-padding:12px 20px;
-font-size:18px;
-cursor:pointer;
-margin-top:20px;
-}
-
 </style>
 </head>
+
 <body>
 
 <div class="header">
@@ -171,96 +90,47 @@ SDGs Gender Equality – Scenario Questions
 Correct: <span id="score">0</span>/6
 </div>
 
-
-<div class="roller">🎢</div>
-<div class="wheel">🎡</div>
-<div class="tent">🎪</div>
-
 <div id="flowers"></div>
+<div id="cards"></div>
 
-
-<div class="modal" id="questionModal">
-
-<h2 id="questionTitle"></h2>
-
-<div id="dragItems"></div>
-
-<div class="dropAreaContainer">
-
-<div class="box equality"
-ondrop="drop(event)"
-ondragover="allowDrop(event)"
-id="equalBox">
-
-<h3>Gender Equality</h3>
-
+<div class="box eq"
+ondrop="drop(event,'eq')"
+ondragover="allowDrop(event)">
+Gender Equality
 </div>
 
-<div class="box inequality"
-ondrop="drop(event)"
-ondragover="allowDrop(event)"
-id="inequalBox">
-
-<h3>Gender Inequality</h3>
-
+<div class="box ineq"
+ondrop="drop(event,'ineq')"
+ondragover="allowDrop(event)">
+Gender Inequality
 </div>
 
-</div>
-
-<button class="submitBtn" onclick="checkAnswer()">
-Submit
-</button>
-
-</div>
-
-
-<div class="resultScreen" id="result">
-
-<h1 id="resultText"></h1>
-
-<div id="resultButton"></div>
-
-</div>
+<div class="result" id="result"></div>
 
 <script>
 
-let score=0;
-let completed=0;
-let currentQuestion=0;
+const sets=[
 
-const questionSets=[
+[
+{text:"Girls and boys have equal school opportunities",type:"eq"},
+{text:"Women cannot be leaders",type:"ineq"}
+],
 
-{
-title:"Question Set 1",
-items:[
-{text:"Boys and girls can join any sports team",correct:"equal"},
-{text:"Only boys can become engineers",correct:"inequal"}
+[
+{text:"Men and women receive same pay",type:"eq"},
+{text:"Only boys can play sports",type:"ineq"}
+],
+
+[
+{text:"Household tasks shared equally",type:"eq"},
+{text:"Girls should avoid science",type:"ineq"}
 ]
-},
-
-{
-title:"Question Set 2",
-items:[
-{text:"Parents support education equally",correct:"equal"},
-{text:"Girls should only do housework",correct:"inequal"}
-]
-},
-
-{
-title:"Question Set 3",
-items:[
-{text:"Everyone deserves equal opportunities",correct:"equal"},
-{text:"Leadership roles belong only to men",correct:"inequal"}
-]
-}
 
 ];
 
-
-
-function createFlowers(){
-
-const container=document.getElementById("flowers");
+let current=0;
+let score=0;
+let done=0;
 
 for(let i=0;i<3;i++){
 
@@ -269,225 +139,110 @@ let flower=document.createElement("div");
 flower.className="flower";
 flower.innerHTML="🌸";
 
-flower.style.left=
-(Math.random()*80+5)+"%";
+flower.style.left=Math.random()*80+"%";
+flower.style.top=(50+Math.random()*40)+"%";
 
-flower.style.top=
-(Math.random()*25+65)+"%";
+flower.onclick=()=>{
 
-flower.onclick=()=>openQuestion(i);
-
-container.appendChild(flower);
+loadSet(i);
+flower.remove();
 
 }
 
-}
-
-createFlowers();
-
-
-
-function openQuestion(index){
-
-if(questionSets[index].done)return;
-
-currentQuestion=index;
-
-document.getElementById(
-"questionTitle"
-).innerText=
-questionSets[index].title;
-
-let dragArea=
-document.getElementById(
-"dragItems"
-);
-
-dragArea.innerHTML="";
-
-document.getElementById(
-"equalBox"
-).innerHTML=
-"<h3>Gender Equality</h3>";
-
-document.getElementById(
-"inequalBox"
-).innerHTML=
-"<h3>Gender Inequality</h3>";
-
-questionSets[index].items.forEach(
-(item,i)=>{
-
-let div=document.createElement("div");
-
-div.className="draggable";
-
-div.id="item"+i;
-
-div.draggable=true;
-
-div.innerText=item.text;
-
-div.dataset.correct=
-item.correct;
-
-div.ondragstart=drag;
-
-dragArea.appendChild(div);
-
-});
-
-document.getElementById(
-"questionModal"
-).style.display="block";
+flowers.appendChild(flower);
 
 }
 
+function loadSet(i){
 
+cards.innerHTML="";
 
-function drag(e){
+sets[i].forEach((c,index)=>{
 
-e.dataTransfer.setData(
-"text",
-e.target.id
-);
+let d=document.createElement("div");
+
+d.className="card";
+d.innerText=c.text;
+d.draggable=true;
+
+d.id="card"+index;
+
+d.dataset.type=c.type;
+
+d.ondragstart=e=>{
+
+e.dataTransfer.setData("text",d.id)
+
+}
+
+cards.appendChild(d)
+
+})
 
 }
 
 function allowDrop(e){
-
-e.preventDefault();
-
+e.preventDefault()
 }
 
-function drop(e){
+function drop(e,type){
 
-e.preventDefault();
+e.preventDefault()
 
-let data=e.dataTransfer.getData(
-"text"
-);
+let id=e.dataTransfer.getData("text");
 
-e.target.appendChild(
-document.getElementById(data)
-);
+let item=document.getElementById(id);
 
+if(item){
+
+if(item.dataset.type==type){
+score++;
+document.getElementById("score").innerText=score;
 }
 
+item.remove();
 
+done++;
 
-function checkAnswer(){
-
-let equal=
-document.getElementById(
-"equalBox"
-);
-
-let inequal=
-document.getElementById(
-"inequalBox"
-);
-
-let correctCount=0;
-
-equal.querySelectorAll(
-".draggable"
-).forEach(item=>{
-
-if(item.dataset.correct=="equal")
-correctCount++;
-
-});
-
-inequal.querySelectorAll(
-".draggable"
-).forEach(item=>{
-
-if(item.dataset.correct=="inequal")
-correctCount++;
-
-});
-
-score+=correctCount;
-completed+=2;
-
-document.getElementById(
-"score"
-).innerText=score;
-
-questionSets[
-currentQuestion
-].done=true;
-
-document.getElementById(
-"questionModal"
-).style.display="none";
-
-document.querySelectorAll(
-".flower"
-)[currentQuestion]
-.style.opacity=".3";
-
-if(completed>=6){
-
-showResult();
+if(done==6){
+finish();
+}
 
 }
 
 }
 
+function finish(){
 
+let r=document.getElementById("result");
 
-function showResult(){
-
-let text="";
-
-let button="";
+r.style.display="block";
 
 if(score<=2){
 
-text="Keep Trying";
-
-button=
-`<button onclick='location.reload()'>
-Try Again
-</button>`;
+r.innerHTML=`
+<h2>Keep Trying</h2>
+<button onclick='location.reload()'>Try Again</button>`;
 
 }
 
 else if(score<=4){
 
-text="Making Progress";
-
-button=
-`<button onclick='location.reload()'>
-Try Again
-</button>`;
+r.innerHTML=`
+<h2>Making Progress</h2>
+<button onclick='location.reload()'>Try Again</button>`;
 
 }
 
 else{
 
-text="Gender Equality Expert";
-
-button=
-`<button onclick="window.location.href='certificate.html'">
+r.innerHTML=`
+<h2>Gender Equality Expert</h2>
+<button onclick='location="certificate.html"'>
 Download Learning Certificate
 </button>`;
 
 }
-
-document.getElementById(
-"resultText"
-).innerText=text;
-
-document.getElementById(
-"resultButton"
-).innerHTML=button;
-
-document.getElementById(
-"result"
-).style.display="block";
 
 }
 
